@@ -41,10 +41,12 @@ class handler(BaseHTTPRequestHandler):
             # 读取参数
             apiid=querys['id']
             apisecert=querys['secert']
-            apiagentId = querys['agentId']
+            apiagentId = os.environ.get('agentId')
+            #apiagentId = querys['agentId']
             apimsg = querys['msg']
         except:
-            apimsg = '有必填参数没有填写，请检查是否填写正确和格式是否错误。详情可以参阅：https://blog.zhheo.com/p/1e9f35bc.html'
+            # apimsg = '有必填参数没有填写，请检查是否填写正确和格式是否错误。详情可以参阅：https://blog.zhheo.com/p/1e9f35bc.html'
+            apimsg = f'event:{event} apiagentId:{apiagentId}'
             status = 1
         else:
             try:
