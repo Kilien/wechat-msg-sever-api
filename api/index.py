@@ -9,11 +9,11 @@ import json
 # 获取token
 def get_token(id, secert):
     url = "https://qyapi.weixin.qq.com/cgi-bin/gettoken"
-    parmas = {
+    params = {
         'corpid': id,
         'corpsecret': secert
     }
-    r = wq().get(url, parmas=parmas).json
+    r = wq().get(url, params=params).json
     return r['access_token']
 
 
@@ -31,7 +31,7 @@ def send_msg(id, secert, agent_id, msg):
             "content": msg
         }
     }
-    return wq().post(sendUrl, json=data).text
+    return wq().post(sendUrl, data=data)
 
 
 class handler(BaseHTTPRequestHandler):
