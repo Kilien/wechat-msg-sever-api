@@ -1,32 +1,35 @@
 # -*- coding: utf8 -*-
-import requests
-import json
+import os
+from utils.webRequest import WebRequest as wq
 from http.server import BaseHTTPRequestHandler
 import urllib.parse as urlparse
+import json
 
-# 获取tocken
-def getTocken(id,secert,msg,agentId):
+
+# 获取token
+def get_token(id, secert, msg, agent_id):
     url = "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=" + id + "&corpsecret=" + secert
 
-    r =requests.get(url)
-    tocken_json = json.loads(r.text)
-    # print(tocken_json['access_token'])
-    sendText(tocken=tocken_json['access_token'],agentId=agentId,msg=msg)
+    r =wq().get(url).json
+    # tocken_json = json.loads(r.text)
+    send_msg(tocken=r['access_token'], agent_id=agent_id, msg=msg)
+
 
 # 发送请求
-def sendText(tocken,agentId,msg):
+def send_msg(tocken, agent_id, msg):
     sendUrl = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=" + tocken
-    # print(sendUrl)
-    data = json.dumps({
+
+    data = {
         "safe": 0,
-        "touser" : "@all",
-        "msgtype" : "text",
-        "agentid" : agentId,
-        "text" : {
-            "content" : msg
+        "touser": "@all",
+        "msgtype": "text",
+        "agentid": agent_id,
+        "text": {
+            "content": msg
         }
-    })
-    requests.post(sendUrl,data)
+    }
+    wq().get(sendUrl, parmas=data)
+
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -41,20 +44,20 @@ class handler(BaseHTTPRequestHandler):
             # 读取参数
             apiid=querys['id']
             apisecert=querys['secert']
-            agentId = os.environ.get('agentId')
+            # agentId = os.environ.get('agentId')
             apiagentId = querys['agentId']
             apimsg = querys['msg']
         except:
-            # apimsg = '有必填参数没有填写，请检查是否填写正确和格式是否错误。详情可以参阅：https://blog.zhheo.com/p/1e9f35bc.html'
-            apimsg = f'event:{event} apiagentId:{agentId}'
+            apimsg = '有必填参数没有填写，请检查是否填写正确和格式是否错误。'
+            # apimsg = f'apiagentId:{apiagentId}'
             status = 1
         else:
             try:
                 # 执行主程序
-                getTocken(id=apiid,secert=apisecert,msg=apimsg,agentId=apiagentId)
+                get_token(id=apiid, secert=apisecert, msg=apimsg, agent_id=apiagentId)
             except:
                 status = 1
-                apimsg = '主程序运行时出现错误，请检查参数是否填写正确。详情可以参阅：https://blog.zhheo.com/p/1e9f35bc.html'
+                apimsg = '主程序运行时出现错误，请检查参数是否填写正确。'
             else:
                 status = 0
 
