@@ -28,10 +28,13 @@ def main(event, context):
     try:
         apiid=event['queryStringParameters']['id']
         apisecert=event['queryStringParameters']['secert']
-        apiagentId = event['queryStringParameters']['agentId']
+        apiagentId = os.environ.get('agentId')
+        # apiagentId = event['queryStringParameters']['agentId']
         apimsg = event['queryStringParameters']['msg']
     except:
-        apimsg = '有必填参数没有填写，请检查是否填写正确和格式是否错误。详情可以参阅：https://blog.zhheo.com/p/1e9f35bc.html'
+        # apimsg = '有必填参数没有填写，请检查是否填写正确和格式是否错误。详情可以参阅：https://blog.zhheo.com/p/1e9f35bc.html'
+        
+        apimsg = event
         status = 1
     else:
         try:
