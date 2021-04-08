@@ -2,8 +2,12 @@
 
 使用企业微信给自己微信发送消息的API，基于vercel
 
-## 发送方式
+## 调用方式
 get
+
+调用地址：
+
+https://wechat-msg-sever-api.vercel.app/api
 
 ## 参数
 

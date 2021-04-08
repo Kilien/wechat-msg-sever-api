@@ -7,17 +7,20 @@ import json
 
 
 # 获取token
-def get_token(id, secert, msg, agent_id):
-    url = "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=" + id + "&corpsecret=" + secert
-
-    r =wq().get(url).json
-    # tocken_json = json.loads(r.text)
-    send_msg(tocken=r['access_token'], agent_id=agent_id, msg=msg)
+def get_token(id, secert):
+    url = "https://qyapi.weixin.qq.com/cgi-bin/gettoken"
+    parmas = {
+        'corpid': id,
+        'corpsecret': secert
+    }
+    r = wq().get(url, parmas=parmas).json
+    return r['access_token']
 
 
 # 发送请求
-def send_msg(tocken, agent_id, msg):
-    sendUrl = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=" + tocken
+def send_msg(id, secert, agent_id, msg):
+    token = get_token(id, secert)
+    sendUrl = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=" + token
 
     data = {
         "safe": 0,
@@ -28,7 +31,7 @@ def send_msg(tocken, agent_id, msg):
             "content": msg
         }
     }
-    wq().get(sendUrl, parmas=data)
+    return wq().post(sendUrl, json=data).text
 
 
 class handler(BaseHTTPRequestHandler):
@@ -54,7 +57,7 @@ class handler(BaseHTTPRequestHandler):
         else:
             try:
                 # 执行主程序
-                get_token(id=apiid, secert=apisecert, msg=apimsg, agent_id=apiagentId)
+                send_msg(id=apiid, secert=apisecert, msg=apimsg, agent_id=apiagentId)
             except:
                 status = 1
                 apimsg = '主程序运行时出现错误，请检查参数是否填写正确。'
